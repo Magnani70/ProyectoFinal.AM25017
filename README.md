@@ -1,5 +1,9 @@
 # pre entrega proyecto 
 El proyecto se encuentra en la rama master
+Usuario para iniciar sesion 
+user: admin@example.com
+contraseña: 123456
+
 # React + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
