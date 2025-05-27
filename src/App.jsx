@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import NavBar from './components/NavBar';
 import Home from './pages/Home';
 import Tecnologia from './pages/Tecnologia';
-import Contact from './pages/Contact';
+import Contact from './pages/contact';
 import Footer from './pages/Footer';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Novedades from './pages/Novedades';
@@ -63,8 +63,8 @@ function App() {
           <Route path="/contact" element={ <Contact />} />
           <Route path="/novedades" element={ <Novedades productos={productos} loading={loading} agregarAlCarrito={agregarAlCarrito} favoritos={favoritos} toggleFavorito={toggleFavorito} />} />
           <Route path="/perfil" element={ <PrivateRoute><Perfil /></PrivateRoute>} />
-         <Route path="/hombre" element={<Hombre productos={productos} loading={loading} agregarAlCarrito={agregarAlCarrito} favoritos={favoritos} toggleFavorito={toggleFavorito} />} />
-         <Route path="/joyeria" element={  <Joyeria productos={productos} loading={loading} agregarAlCarrito={agregarAlCarrito} favoritos={favoritos} toggleFavorito={toggleFavorito} /> } />
+          <Route path="/hombre" element={<Hombre productos={productos} loading={loading} agregarAlCarrito={agregarAlCarrito} favoritos={favoritos} toggleFavorito={toggleFavorito} />} />
+          <Route path="/joyeria" element={  <Joyeria productos={productos} loading={loading} agregarAlCarrito={agregarAlCarrito} favoritos={favoritos} toggleFavorito={toggleFavorito} /> } />
           <Route path="/mujer" element={  <Mujer productos={productos} loading={loading} agregarAlCarrito={agregarAlCarrito} favoritos={favoritos} toggleFavorito={toggleFavorito} /> } />
           <Route path="/carrito" element={ <PrivateRoute><Carrito carrito={carrito} agregarAlCarrito={agregarAlCarrito} setCarrito={setCarrito} /> </PrivateRoute> } />
           <Route path="/favoritos" element={ <PrivateRoute> <Favoritos favoritos={favoritos} setFavoritos={setFavoritos} /> </PrivateRoute> } />
