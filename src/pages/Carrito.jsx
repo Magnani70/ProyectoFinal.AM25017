@@ -1,23 +1,13 @@
 import React from 'react';
-import { Container, Row, Col, Card, Button } from 'react-bootstrap';
 import { useAuth } from '../components/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
+import { Container, Row, Col, Card, Button, Alert, Form } from 'react-bootstrap';
 
-const Carrito = ({ carrito, agregarAlCarrito, setCarrito }) => {
+const Carrito = ({ carrito, setCarrito }) => {
   const { user } = useAuth();
-  const navigate = useNavigate();
 
-  // Si no hay usuario logueado, mostramos un mensaje
-  if (!user) {
-    return (
-      <Container className="mt-4 text-center">
-        <h1>Carrito de Compras</h1>
-        <p>Debes <span style={{ color: 'blue', cursor: 'pointer' }} onClick={() => navigate('/login')}>iniciar sesión</span> para ver los productos en tu carrito.</p>
-      </Container>
-    );
-  }
+  if (!user) return <Navigate to="/login" replace />;
 
-  // Agrupar productos por ID y contar cantidad
   const productosAgrupados = carrito.reduce((acc, producto) => {
     const existente = acc.find((item) => item.id === producto.id);
     if (existente) {
@@ -33,59 +23,135 @@ const Carrito = ({ carrito, agregarAlCarrito, setCarrito }) => {
     0
   );
 
-  const handleEliminar = (producto) => {
+  const aumentarCantidad = (producto) => {
+    setCarrito((prev) => [...prev, producto]);
+  };
+
+  const disminuirCantidad = (producto) => {
+    let eliminado = false;
+    setCarrito((prev) => {
+      const nuevaLista = [];
+      let primeraOcurrenciaEliminada = false;
+      for (const p of prev) {
+        if (!primeraOcurrenciaEliminada && p.id === producto.id) {
+          primeraOcurrenciaEliminada = true;
+          continue;
+        }
+        nuevaLista.push(p);
+      }
+      return nuevaLista;
+    });
+  };
+
+  const eliminarProducto = (producto) => {
     setCarrito((prev) => prev.filter((p) => p.id !== producto.id));
   };
 
   return (
     <Container className="mt-4">
-      <h1>Carrito de Compras</h1>
-
+      <h2 className="mb-4 fw-bold">TU CARRITO</h2>
       {productosAgrupados.length === 0 ? (
-        <p>No hay productos en el carrito.</p>
+        <p className="text-center">Tu carrito está vacío.</p>
       ) : (
-        <>
-          <Row>
-            {productosAgrupados.map((producto) => (
-              <Col key={producto.id} md={6} lg={4} className="mb-4">
-                <Card className="h-100">
-                  <div className="position-relative">
-                    <Card.Img
-                      variant="top"
-                      src={producto.image}
-                      style={{ height: '200px', objectFit: 'contain' }}
-                    />
-                    <Button
-                      variant="danger"
-                      size="sm"
-                      onClick={() => handleEliminar(producto)}
-                      className="position-absolute top-0 end-0 m-2"
-                    >
-                      ❌
-                    </Button>
-                  </div>
-                  <Card.Body className="d-flex flex-column">
-                    <Card.Title style={{ fontSize: '16px' }}>{producto.title}</Card.Title>
-                    <Card.Text>Precio unitario: ${producto.price.toFixed(2)}</Card.Text>
-                    <Card.Text>Cantidad: {producto.cantidad}</Card.Text>
-                    <Card.Text>
-                      Subtotal: ${(producto.price * producto.cantidad).toFixed(2)}
-                    </Card.Text>
-                    <Button
-                      variant="success"
-                      className="mt-auto"
-                      onClick={() => agregarAlCarrito(producto)}
-                    >
-                      + Agregar uno más
-                    </Button>
-                  </Card.Body>
-                </Card>
-              </Col>
-            ))}
-          </Row>
+        <Row>
+          {/* Columna izquierda: productos */}
+          <Col md={8}>
+            <Alert variant="danger" className="text-center fw-semibold">
+              🔔 TUS ARTÍCULOS DEL CARRITO NO ESTÁN RESERVADOS 🔔
+              <br />
+              Asegurá tus artículos antes que se agoten. 3 cuotas sin interés por compras mayores a $89.999.
+            </Alert>
 
-          <h3>Total a pagar: ${total.toFixed(2)}</h3>
-        </>
+            {productosAgrupados.map((producto) => (
+              <Card key={producto.id} className="mb-3">
+                <Row className="g-0">
+                  <Col md={4} className="d-flex justify-content-center align-items-center p-2">
+                    <Card.Img
+                      src={producto.image}
+                      alt={producto.title}
+                      style={{ maxHeight: '200px', objectFit: 'contain' }}
+                    />
+                  </Col>
+                  <Col md={8}>
+                    <Card.Body>
+                      <div className="d-flex justify-content-between align-items-start">
+                        <div>
+                          <Card.Title className="mb-2">{producto.title}</Card.Title>
+                          <Card.Text className="mb-1 fw-semibold">Precio: ${producto.price.toFixed(2)}</Card.Text>
+                          <Card.Text>Tamaño: único</Card.Text>
+                          <div className="d-flex align-items-center gap-2 mt-2">
+                            <Button
+                              variant="outline-secondary"
+                              size="sm"
+                              onClick={() => disminuirCantidad(producto)}
+                              disabled={producto.cantidad <= 1}
+                            >
+                              -
+                            </Button>
+                            <span className="fw-bold">{producto.cantidad}</span>
+                            <Button
+                              variant="outline-secondary"
+                              size="sm"
+                              onClick={() => aumentarCantidad(producto)}
+                            >
+                              +
+                            </Button>
+                          </div>
+                        </div>
+                        <Button
+                          variant="outline-danger"
+                          size="sm"
+                          onClick={() => eliminarProducto(producto)}
+                        >
+                          ✖
+                        </Button>
+                      </div>
+                    </Card.Body>
+                  </Col>
+                </Row>
+              </Card>
+            ))}
+          </Col>
+
+          {/* Columna derecha: resumen del pedido */}
+          <Col md={4}>
+            <Card className="p-3 shadow-sm">
+              <h5 className="fw-bold">RESUMEN DEL PEDIDO</h5>
+              <div className="d-flex justify-content-between">
+                <span>{carrito.length} producto{carrito.length > 1 && 's'}</span>
+                <span>${total.toFixed(2)}</span>
+              </div>
+              <div className="d-flex justify-content-between">
+                <span>Envío estimado</span>
+                <span>$8.999</span>
+              </div>
+              <hr />
+              <div className="d-flex justify-content-between fw-bold">
+                <span>Total</span>
+                <span>${(total + 8999).toFixed(2)}</span>
+              </div>
+
+              <Form.Group className="mt-3">
+                <Form.Label className="fw-semibold">💸 Usá un código promocional</Form.Label>
+                <Form.Control placeholder="Ingresá tu cupón" />
+              </Form.Group>
+
+              <Button
+                variant="dark"
+                size="lg"
+                className="mt-4 w-100"
+                onClick={() => alert('Redirigiendo a pasarela de pago...')}
+              >
+                IR A PAGAR →
+              </Button>
+
+              <div className="text-center mt-3">
+                <small>OPCIONES DE PAGO</small>
+                <div className="mt-1">💳 Mastercard | 💳 Visa</div>
+              </div>
+            </Card>
+          </Col>
+        </Row>
       )}
     </Container>
   );

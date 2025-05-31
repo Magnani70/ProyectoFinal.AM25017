@@ -1,19 +1,53 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Button, Modal } from 'react-bootstrap';
+import { useAuth } from '../components/AuthContext';
+import { Link } from 'react-router-dom';
 
 const Favoritos = ({ favoritos, setFavoritos }) => {
-  const [showModal, setShowModal] = useState(false);
+  const { user } = useAuth();
+  const [showLoginModal, setShowLoginModal] = useState(!user);
+  const [showEliminarModal, setShowEliminarModal] = useState(false);
   const [productoAEliminar, setProductoAEliminar] = useState(null);
+
+  useEffect(() => {
+    if (!user) setShowLoginModal(true);
+  }, [user]);
 
   const handleMostrarModal = (producto) => {
     setProductoAEliminar(producto);
-    setShowModal(true);
+    setShowEliminarModal(true);
   };
 
   const handleEliminar = () => {
     setFavoritos((prev) => prev.filter((p) => p.id !== productoAEliminar.id));
-    setShowModal(false);
+    setShowEliminarModal(false);
   };
+
+  if (!user) {
+    return (
+      <>
+        {showLoginModal && (
+          <div className="modal d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+            <div className="modal-dialog modal-dialog-centered">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <h5 className="modal-title">Iniciar sesión requerido</h5>
+                  <button type="button" className="btn-close" onClick={() => setShowLoginModal(false)}></button>
+                </div>
+                <div className="modal-body">
+                  <p>Debes iniciar sesión para ver tus favoritos.</p>
+                </div>
+                <div className="modal-footer">
+                  <Link to="/login" className="btn btn-primary">Ir a Login</Link>
+                  <button className="btn btn-secondary" onClick={() => setShowLoginModal(false)}>Cerrar</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </>
+    );
+  }
 
   return (
     <Container className="mt-4">
@@ -49,18 +83,14 @@ const Favoritos = ({ favoritos, setFavoritos }) => {
       )}
 
       {/* Modal confirmación eliminar */}
-      <Modal show={showModal} onHide={() => setShowModal(false)} centered>
+      <Modal show={showEliminarModal} onHide={() => setShowEliminarModal(false)} centered>
         <Modal.Header closeButton>
           <Modal.Title>Eliminar favorito</Modal.Title>
         </Modal.Header>
         <Modal.Body>¿Seguro que querés eliminar este producto de favoritos?</Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowModal(false)}>
-            Cancelar
-          </Button>
-          <Button variant="danger" onClick={handleEliminar}>
-            Eliminar
-          </Button>
+          <Button variant="secondary" onClick={() => setShowEliminarModal(false)}>Cancelar</Button>
+          <Button variant="danger" onClick={handleEliminar}>Eliminar</Button>
         </Modal.Footer>
       </Modal>
     </Container>

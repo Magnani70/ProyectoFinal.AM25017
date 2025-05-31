@@ -12,30 +12,16 @@ import Joyeria from './pages/Joyeria';
 import Carrito from './pages/Carrito';
 import Favoritos from './pages/Favoritos';
 import Login from './components/Login'; 
-import { AuthProvider } from './components/AuthContext'; 
+import { AuthProvider, useAuth } from './components/AuthContext'; 
 import PrivateRoute from './components/PrivateRoute'; 
 import Perfil from './pages/Perfil'; 
 
-function App() {
+function AppContent() {
   const [productos, setProductos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [carrito, setCarrito] = useState([]);
   const [favoritos, setFavoritos] = useState([]);
-
-  const agregarAlCarrito = (producto) => {
-    setCarrito((prev) => [...prev, producto]);
-  };
-
-  const toggleFavorito = (producto) => {
-    setFavoritos((prev) => {
-      const existe = prev.find((p) => p.id === producto.id);
-      if (existe) {
-        return prev.filter((p) => p.id !== producto.id);
-      } else {
-        return [...prev, producto];
-      }
-    });
-  };
+  const { user } = useAuth();
 
   useEffect(() => {
     fetch('https://fakestoreapi.com/products')
@@ -50,28 +36,89 @@ function App() {
       });
   }, []);
 
+   // Cargar favoritos al iniciar sesión
+  useEffect(() => {
+    if (user) {
+      const favoritosGuardados = localStorage.getItem(`favoritos_${user.email}`);
+      if (favoritosGuardados) {
+        setFavoritos(JSON.parse(favoritosGuardados));
+      } else {
+        setFavoritos([]);
+      }
+    } else {
+      setFavoritos([]);
+    }
+  }, [user]);
+
+  // Guardar favoritos al cambiar
+  useEffect(() => {
+    if (user) {
+      localStorage.setItem(`favoritos_${user.email}`, JSON.stringify(favoritos));
+    }
+  }, [favoritos, user]);
+
+  // Cargar carrito al iniciar sesión
+  useEffect(() => {
+    if (user) {
+      const carritoGuardado = localStorage.getItem(`carrito_${user.email}`);
+      if (carritoGuardado) {
+        setCarrito(JSON.parse(carritoGuardado));
+      } else {
+        setCarrito([]);
+      }
+    } else {
+      setCarrito([]);
+    }
+  }, [user]);
+
+  // Guardar carrito al cambiar
+  useEffect(() => {
+    if (user) {
+      localStorage.setItem(`carrito_${user.email}`, JSON.stringify(carrito));
+    }
+  }, [carrito, user]);
+
+  const agregarAlCarrito = (producto) => {
+    if (!user) return;
+    setCarrito((prev) => [...prev, producto]);
+  };
+
+  const toggleFavorito = (producto) => {
+    setFavoritos((prev) => {
+      const existe = prev.find((p) => p.id === producto.id);
+      return existe ? prev.filter((p) => p.id !== producto.id) : [...prev, producto];
+    });
+  };
+
+  return (
+    <>
+      <NavBar carrito={carrito} />
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/" element={<Home productos={productos} agregarAlCarrito={agregarAlCarrito} favoritos={favoritos} toggleFavorito={toggleFavorito} />} />
+        <Route path="/tecnologia" element={<Tecnologia productos={productos} loading={loading} agregarAlCarrito={agregarAlCarrito} favoritos={favoritos} toggleFavorito={toggleFavorito} />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/novedades" element={<Novedades productos={productos} loading={loading} agregarAlCarrito={agregarAlCarrito} favoritos={favoritos} toggleFavorito={toggleFavorito} />} />
+        <Route path="/perfil" element={<PrivateRoute><Perfil /></PrivateRoute>} />
+        <Route path="/hombre" element={<Hombre productos={productos} loading={loading} agregarAlCarrito={agregarAlCarrito} favoritos={favoritos} toggleFavorito={toggleFavorito} />} />
+        <Route path="/joyeria" element={<Joyeria productos={productos} loading={loading} agregarAlCarrito={agregarAlCarrito} favoritos={favoritos} toggleFavorito={toggleFavorito} />} />
+        <Route path="/mujer" element={<Mujer productos={productos} loading={loading} agregarAlCarrito={agregarAlCarrito} favoritos={favoritos} toggleFavorito={toggleFavorito} />} />
+        <Route path="/carrito" element={<Carrito carrito={carrito} agregarAlCarrito={agregarAlCarrito} setCarrito={setCarrito} />} />
+        <Route path="/favoritos" element={<PrivateRoute><Favoritos favoritos={favoritos} setFavoritos={setFavoritos} /></PrivateRoute>} />
+      </Routes>
+      <Footer />
+    </>
+  );
+}
+
+function App() {
   return (
     <div className="d-flex flex-column min-vh-100">
-    <AuthProvider> {/* Envuelve toda la aplicación con AuthProvider */}
-      <Router>
-        <NavBar carrito={carrito} />
-        <Routes>
-          {/* Rutas públicas */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/" element={<Home productos={productos} agregarAlCarrito={agregarAlCarrito} favoritos={favoritos} toggleFavorito={toggleFavorito} />} />
-          <Route path="/tecnologia" element={<Tecnologia productos={productos} loading={loading} agregarAlCarrito={agregarAlCarrito} favoritos={favoritos} toggleFavorito={toggleFavorito} />} />
-          <Route path="/contact" element={ <Contact />} />
-          <Route path="/novedades" element={ <Novedades productos={productos} loading={loading} agregarAlCarrito={agregarAlCarrito} favoritos={favoritos} toggleFavorito={toggleFavorito} />} />
-          <Route path="/perfil" element={ <PrivateRoute><Perfil /></PrivateRoute>} />
-          <Route path="/hombre" element={<Hombre productos={productos} loading={loading} agregarAlCarrito={agregarAlCarrito} favoritos={favoritos} toggleFavorito={toggleFavorito} />} />
-          <Route path="/joyeria" element={  <Joyeria productos={productos} loading={loading} agregarAlCarrito={agregarAlCarrito} favoritos={favoritos} toggleFavorito={toggleFavorito} /> } />
-          <Route path="/mujer" element={  <Mujer productos={productos} loading={loading} agregarAlCarrito={agregarAlCarrito} favoritos={favoritos} toggleFavorito={toggleFavorito} /> } />
-          <Route path="/carrito" element={ <PrivateRoute><Carrito carrito={carrito} agregarAlCarrito={agregarAlCarrito} setCarrito={setCarrito} /> </PrivateRoute> } />
-          <Route path="/favoritos" element={ <PrivateRoute> <Favoritos favoritos={favoritos} setFavoritos={setFavoritos} /> </PrivateRoute> } />
-        </Routes>
-        <Footer />
-      </Router>
-    </AuthProvider>
+      <AuthProvider>
+        <Router>
+          <AppContent />
+        </Router>
+      </AuthProvider>
     </div>
   );
 }
