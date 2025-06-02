@@ -21,7 +21,7 @@ function AppContent() {
   const [loading, setLoading] = useState(true);
   const [carrito, setCarrito] = useState([]);
   const [favoritos, setFavoritos] = useState([]);
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
 
   useEffect(() => {
     fetch('https://fakestoreapi.com/products')
@@ -99,7 +99,7 @@ function AppContent() {
         <Route path="/tecnologia" element={<Tecnologia productos={productos} loading={loading} agregarAlCarrito={agregarAlCarrito} favoritos={favoritos} toggleFavorito={toggleFavorito} />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/novedades" element={<Novedades productos={productos} loading={loading} agregarAlCarrito={agregarAlCarrito} favoritos={favoritos} toggleFavorito={toggleFavorito} />} />
-        <Route path="/perfil" element={<PrivateRoute><Perfil /></PrivateRoute>} />
+        <Route path="/perfil" element={<PrivateRoute> <Perfil user={user} carrito={carrito} logout={logout} /> </PrivateRoute>} />
         <Route path="/hombre" element={<Hombre productos={productos} loading={loading} agregarAlCarrito={agregarAlCarrito} favoritos={favoritos} toggleFavorito={toggleFavorito} />} />
         <Route path="/joyeria" element={<Joyeria productos={productos} loading={loading} agregarAlCarrito={agregarAlCarrito} favoritos={favoritos} toggleFavorito={toggleFavorito} />} />
         <Route path="/mujer" element={<Mujer productos={productos} loading={loading} agregarAlCarrito={agregarAlCarrito} favoritos={favoritos} toggleFavorito={toggleFavorito} />} />
