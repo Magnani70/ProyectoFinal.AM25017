@@ -15,6 +15,8 @@ import Login from './components/Login';
 import { AuthProvider, useAuth } from './components/AuthContext'; 
 import PrivateRoute from './components/PrivateRoute'; 
 import Perfil from './pages/Perfil'; 
+import EditarPerfil from './pages/EditarPerfil';
+import Ofertas from "./pages/Ofertas";
 
 function AppContent() {
   const [productos, setProductos] = useState([]);
@@ -100,15 +102,14 @@ function AppContent() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/novedades" element={<Novedades productos={productos} loading={loading} agregarAlCarrito={agregarAlCarrito} favoritos={favoritos} toggleFavorito={toggleFavorito} />} />
         <Route path="/perfil" element={<PrivateRoute> <Perfil user={user} carrito={carrito} logout={logout} /> </PrivateRoute>} />
+        <Route path="/editar-perfil" element={ <PrivateRoute><EditarPerfil /></PrivateRoute>} />
         <Route path="/hombre" element={<Hombre productos={productos} loading={loading} agregarAlCarrito={agregarAlCarrito} favoritos={favoritos} toggleFavorito={toggleFavorito} />} />
         <Route path="/joyeria" element={<Joyeria productos={productos} loading={loading} agregarAlCarrito={agregarAlCarrito} favoritos={favoritos} toggleFavorito={toggleFavorito} />} />
         <Route path="/mujer" element={<Mujer productos={productos} loading={loading} agregarAlCarrito={agregarAlCarrito} favoritos={favoritos} toggleFavorito={toggleFavorito} />} />
         <Route path="/carrito" element={<Carrito carrito={carrito} agregarAlCarrito={agregarAlCarrito} setCarrito={setCarrito} />} />
         <Route path="/favoritos" element={<PrivateRoute><Favoritos favoritos={favoritos} setFavoritos={setFavoritos} /></PrivateRoute>} />
-      </Routes>
-      <Footer />
-    </>
-  );
+        <Route path="/ofertas" element={<Ofertas productos={productos} agregarAlCarrito={agregarAlCarrito} />}/></Routes><Footer /></>
+);
 }
 
 function App() {

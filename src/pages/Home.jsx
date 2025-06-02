@@ -1,6 +1,14 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Container, Row, Col, Card, Button, Modal, Carousel, Spinner,} from "react-bootstrap";
+import {
+  Container,
+  Row,
+  Col,
+  Card,
+  Button,
+  Modal,
+  Spinner,
+} from "react-bootstrap";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
 import { useAuth } from "../components/AuthContext";
 
@@ -39,126 +47,67 @@ const Home = ({ productos, agregarAlCarrito, favoritos, toggleFavorito }) => {
     }
   };
 
-  const renderCarrusel = (productosCarrusel) => {
-    return (
-      <Carousel fade interval={4000} className="mb-4">
-        {productosCarrusel.map((producto, index) => (
-          <Carousel.Item key={index}>
-            <img
-              className="d-block w-100"
-              src={producto.image}
-              alt={producto.title}
-              style={{
-                height: "50vh",
-                objectFit: "contain",
-                backgroundColor: "#f8f9fa",
-                borderRadius: "12px",
-              }}
-            />
-            <Carousel.Caption>
-              <h5
-                style={{
-                  backgroundColor: "rgba(0,0,0,0.5)",
-                  padding: "5px",
-                  borderRadius: "8px",
-                }}
-              >
-                {producto.title}
-              </h5>
-            </Carousel.Caption>
-          </Carousel.Item>
-        ))}
-      </Carousel>
-    );
-  };
-
-  const renderTarjetas = (productosTarjetas) => {
-    return (
-      <Row className="mb-5">
-        {productosTarjetas.map((producto) => (
-          <Col key={producto.id} md={4} className="mb-4">
-            <Card className="h-100 position-relative">
-              <Card.Img
-                variant="top"
-                src={producto.image}
-                style={{ height: "200px", objectFit: "contain" }}
-              />
-              <div
-                style={{
-                  position: "absolute",
-                  top: 10,
-                  right: 10,
-                  color: "red",
-                  cursor: "pointer",
-                  fontSize: "1.5rem",
-                  backgroundColor: "white",
-                  borderRadius: "50%",
-                  padding: "5px",
-                }}
-                onClick={() => handleToggleFavorito(producto)}
-              >
-                {favoritos.find((p) => p.id === producto.id) ? (
-                  <FaHeart />
-                ) : (
-                  <FaRegHeart />
-                )}
-              </div>
-              <Card.Body className="d-flex flex-column">
-                <Card.Title style={{ fontSize: "16px" }}>
-                  {producto.title}
-                </Card.Title>
-                <Card.Text>${producto.price}</Card.Text>
-                <Button
-                  variant="primary"
-                  className="mt-auto"
-                  onClick={() => handleAgregarAlCarrito(producto)}
-                >
-                  Agregar al carrito
-                </Button>
-              </Card.Body>
-            </Card>
-          </Col>
-        ))}
-      </Row>
-    );
-  };
-
-  const renderSeccionCategoria = (titulo, categoria) => {
-    const productosCategoria = productos.filter(
-      (p) => p.category === categoria
-    );
-    if (productosCategoria.length < 3) return null;
-
-    const tresParaCarrusel = productosCategoria.slice(0, 3);
-    const tresParaTarjetas = productosCategoria.slice(0, 3);
-
-    return (
-      <div className="mb-5" key={categoria}>
-        {renderCarrusel(tresParaCarrusel)}
-        {renderTarjetas(tresParaTarjetas)}
-      </div>
-    );
-  };
-
   return (
-    <Container className="mt-4">
-      <h1 className="mb-5 text-center">Bienvenido a AMventas</h1>
+    <div>
+   {/* Hero Banner - Versión adaptable */}
+<div className="bg-light py-5 px-3 d-flex flex-column flex-md-row align-items-center justify-content-center text-center text-md-start">
+  <img
+    src="src/img/oferta-black.png"
+    alt="Banner Promocional"
+    className="img-fluid rounded shadow-sm mb-4 mb-md-0 me-md-5"
+    style={{ maxWidth: "25%" }}
+  />
+  <div>
+    <h2 className="fw-bold mb-2">¡Ofertas de temporada!</h2>
+    <p className="mb-3">Hasta 40% de descuento en productos seleccionados</p>
+    <Button variant="danger" size="lg" onClick={() => navigate("/ofertas")}>
+      Ver más
+    </Button>
+  </div>
+</div>
 
-      {!productos || productos.length === 0 ? (
-        <div className="text-center">
-          <Spinner animation="border" variant="primary" />
-          <p className="mt-2">Cargando productos...</p>
-        </div>
-      ) : (
-        <>
-          {renderSeccionCategoria("Ropa de Hombre", "men's clothing")}
-          {renderSeccionCategoria("Ropa de Mujer", "women's clothing")}
-          {renderSeccionCategoria("Joyas", "jewelery")}
-          {renderSeccionCategoria("Tecnología", "electronics")}
-        </>
-      )}
+      {/* Destacados */}
+      <Container className="mb-5">
+        <h2 className="text-center mb-4">Destacados</h2>
+        {productos.length === 0 ? (
+          <div className="text-center">
+            <Spinner animation="border" />
+            <p>Cargando productos...</p>
+          </div>
+        ) : (
+          <Row>
+            {productos.slice(0, 4).map((producto) => (
+              <Col key={producto.id} md={3} sm={6} xs={12} className="mb-4">
+                <ProductCard
+                  producto={producto}
+                  handleAgregarAlCarrito={handleAgregarAlCarrito}
+                  handleToggleFavorito={handleToggleFavorito}
+                  favoritos={favoritos}
+                />
+              </Col>
+            ))}
+          </Row>
+        )}
+      </Container>
 
-      {/* Modal de login */}
+      {/* Todos los productos */}
+      <Container className="mb-5">
+        <h2 className="text-center mb-4">Todos los productos</h2>
+        <Row>
+          {productos.map((producto) => (
+            <Col key={producto.id} md={3} sm={6} xs={12} className="mb-4">
+              <ProductCard
+                producto={producto}
+                handleAgregarAlCarrito={handleAgregarAlCarrito}
+                handleToggleFavorito={handleToggleFavorito}
+                favoritos={favoritos}
+              />
+            </Col>
+          ))}
+        </Row>
+      </Container>
+
+      {/* Modal login */}
       <Modal show={showModalLogin} onHide={() => setShowModalLogin(false)} centered>
         <Modal.Header closeButton>
           <Modal.Title>Inicia sesión</Modal.Title>
@@ -170,13 +119,49 @@ const Home = ({ productos, agregarAlCarrito, favoritos, toggleFavorito }) => {
           <Button variant="secondary" onClick={() => setShowModalLogin(false)}>
             Cancelar
           </Button>
-          <Button variant="primary" onClick={() => navigate("/login")}>
-            Ir a login
-          </Button>
+          <Button variant="primary" onClick={() => navigate("/login")}>Ir a login</Button>
         </Modal.Footer>
       </Modal>
-    </Container>
+    </div>
   );
 };
+
+const ProductCard = ({ producto, handleAgregarAlCarrito, handleToggleFavorito, favoritos }) => (
+  <Card className="h-100 shadow-sm">
+    <div style={{ position: "relative" }}>
+      <Card.Img
+        variant="top"
+        src={producto.image}
+        alt={producto.title}
+        style={{ height: "200px", objectFit: "contain", padding: "10px" }}
+      />
+      <div
+        style={{
+          position: "absolute",
+          top: 10,
+          right: 10,
+          color: "red",
+          cursor: "pointer",
+          fontSize: "1.3rem",
+          backgroundColor: "white",
+          borderRadius: "50%",
+          padding: "5px",
+        }}
+        onClick={() => handleToggleFavorito(producto)}
+      >
+        {favoritos.find((p) => p.id === producto.id) ? <FaHeart /> : <FaRegHeart />}
+      </div>
+    </div>
+    <Card.Body className="d-flex flex-column">
+      <Card.Title style={{ fontSize: "1rem" }}>{producto.title}</Card.Title>
+      <Card.Text>
+        <strong>${producto.price}</strong>
+      </Card.Text>
+      <Button variant="success" className="mt-auto" onClick={() => handleAgregarAlCarrito(producto)}>
+        Agregar
+      </Button>
+    </Card.Body>
+  </Card>
+);
 
 export default Home;
