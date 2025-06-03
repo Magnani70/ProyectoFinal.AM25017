@@ -47,7 +47,7 @@ const Login = () => {
           />
         </Form.Group>
 
-        <Button variant="primary" type="submit" className="w-100">
+        <Button variant="success" type="submit" className="w-100">
           Ingresar
         </Button>
       </Form>

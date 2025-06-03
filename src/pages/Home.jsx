@@ -119,12 +119,37 @@ const Home = ({ productos, agregarAlCarrito, favoritos, toggleFavorito }) => {
           <Button variant="secondary" onClick={() => setShowModalLogin(false)}>
             Cancelar
           </Button>
-          <Button variant="primary" onClick={() => navigate("/login")}>Ir a login</Button>
+          <Button variant="success" onClick={() => navigate("/login")}>Ir a login</Button>
         </Modal.Footer>
       </Modal>
     </div>
   );
 };
+
+{/* Modal producto agregado */}
+      <Modal show={showModal} onHide={() => setShowModal(false)} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Producto agregado</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {productoSeleccionado && (
+            <>
+              <p>"{productoSeleccionado.title}" se ha agregado al carrito.</p>
+              <div className="text-center">
+                <img
+                  src={productoSeleccionado.image}
+                  alt={productoSeleccionado.title}
+                  style={{ height: "100px", objectFit: "contain" }}
+                />
+              </div>
+            </>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowModal(false)}>Seguir comprando</Button>
+          <Button variant="primary" onClick={() => navigate("/carrito")}>Ver carrito</Button>
+        </Modal.Footer>
+      </Modal>
 
 const ProductCard = ({ producto, handleAgregarAlCarrito, handleToggleFavorito, favoritos }) => (
   <Card className="h-100 shadow-sm">

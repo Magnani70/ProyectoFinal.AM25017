@@ -103,7 +103,7 @@ const NavBar = ({ carrito }) => {
           <Button variant="secondary" onClick={handleCerrarCarrito}>
             Cerrar
           </Button>
-          <Button variant="primary" as={Link} to="/carrito" onClick={handleCerrarCarrito}>
+          <Button variant="success" as={Link} to="/carrito" onClick={handleCerrarCarrito}>
             Ver carrito completo
           </Button>
         </Modal.Footer>

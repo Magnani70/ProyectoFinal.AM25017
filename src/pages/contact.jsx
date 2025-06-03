@@ -71,7 +71,7 @@ function Contact() {
             required
           />
         </Form.Group>
-        <Button variant="primary" type="submit">Enviar</Button>
+        <Button variant="success" type="submit">Enviar</Button>
       </Form>
 
       {/* Modal de confirmación */}

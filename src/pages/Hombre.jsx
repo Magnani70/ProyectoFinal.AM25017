@@ -1,15 +1,29 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Container, Row, Col, Card, Button, Spinner, Modal } from "react-bootstrap";
+import {
+  Container,
+  Row,
+  Col,
+  Card,
+  Button,
+  Spinner,
+  Modal,
+} from "react-bootstrap";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
-import { useAuth } from "../components/AuthContext"; // Asegurate que sea tu path correcto
+import { useAuth } from "../components/AuthContext";
 
-const Hombre = ({ productos, loading, agregarAlCarrito, favoritos, toggleFavorito }) => {
+const Hombre = ({
+  productos,
+  loading,
+  agregarAlCarrito,
+  favoritos,
+  toggleFavorito,
+}) => {
   const [showModal, setShowModal] = useState(false);
   const [productoSeleccionado, setProductoSeleccionado] = useState(null);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const navigate = useNavigate();
-  const { user } = useAuth(); // para saber si está logueado
+  const { user } = useAuth();
 
   const productosHombre = productos.filter(
     (producto) => producto.category === "men's clothing"
@@ -33,13 +47,6 @@ const Hombre = ({ productos, loading, agregarAlCarrito, favoritos, toggleFavorit
     toggleFavorito(producto);
   };
 
-  const handleCloseModal = () => setShowModal(false);
-  const handleCloseLoginPrompt = () => setShowLoginPrompt(false);
-  const handleVerCarrito = () => {
-    setShowModal(false);
-    navigate("/carrito");
-  };
-
   if (loading) {
     return (
       <Container className="mt-4 text-center">
@@ -51,50 +58,50 @@ const Hombre = ({ productos, loading, agregarAlCarrito, favoritos, toggleFavorit
 
   return (
     <Container className="mt-4">
-      <h1>Ropa de Hombre</h1>
-      <Row>
-        {productosHombre.map((producto) => (
-          <Col key={producto.id} md={4} className="mb-4">
-            <Card className="h-100 position-relative">
-              <Card.Img
-                variant="top"
-                src={producto.image}
-                style={{ height: "200px", objectFit: "contain" }}
-              />
-              <div
-                style={{
-                  position: "absolute",
-                  top: 10,
-                  right: 10,
-                  color: "red",
-                  cursor: "pointer",
-                  fontSize: "1.5rem",
-                  backgroundColor: "white",
-                  borderRadius: "50%",
-                  padding: "5px"
-                }}
-                onClick={() => handleToggleFavorito(producto)}
-              >
-                {favoritos.find((p) => p.id === producto.id) ? <FaHeart /> : <FaRegHeart />}
-              </div>
-              <Card.Body className="d-flex flex-column">
-                <Card.Title style={{ fontSize: "16px" }}>{producto.title}</Card.Title>
-                <Card.Text>${producto.price}</Card.Text>
-                <Button
-                  variant="primary"
-                  className="mt-auto"
-                  onClick={() => handleAgregarAlCarrito(producto)}
-                >
-                  Agregar al carrito
-                </Button>
-              </Card.Body>
-            </Card>
-          </Col>
-        ))}
-      </Row>
+  <h2 className="mb-4 fw-bold text-success">Ropa de Hombre</h2>
+  <Row>
+    {productosHombre.map((producto) => (
+      <Col key={producto.id} md={4} sm={6} xs={12} className="mb-4">
+        <Card className="h-100 shadow-sm position-relative">
+          <Card.Img
+            variant="top"
+            src={producto.image}
+            style={{ height: "250px", objectFit: "contain" }}
+          />
+          <div
+            style={{
+              position: "absolute",
+              top: 10,
+              right: 10,
+              fontSize: "1.5rem",
+              color: "red",
+              backgroundColor: "#fff",
+              borderRadius: "50%",
+              padding: "5px",
+              cursor: "pointer",
+            }}
+            onClick={() => handleToggleFavorito(producto)}
+          >
+            {favoritos.find((p) => p.id === producto.id) ? <FaHeart /> : <FaRegHeart />}
+          </div>
+          <Card.Body className="d-flex flex-column">
+            <Card.Title>{producto.title}</Card.Title>
+            <Card.Text className="text-primary fw-bold">${producto.price}</Card.Text>
+            <Button
+              variant="success"
+              className="mt-auto"
+              onClick={() => handleAgregarAlCarrito(producto)}
+            >
+              Agregar al carrito
+            </Button>
+          </Card.Body>
+        </Card>
+      </Col>
+    ))}
+  </Row>
 
       {/* Modal producto agregado */}
-      <Modal show={showModal} onHide={handleCloseModal} centered>
+      <Modal show={showModal} onHide={() => setShowModal(false)} centered>
         <Modal.Header closeButton>
           <Modal.Title>Producto agregado</Modal.Title>
         </Modal.Header>
@@ -103,8 +110,8 @@ const Hombre = ({ productos, loading, agregarAlCarrito, favoritos, toggleFavorit
             <>
               <p>"{productoSeleccionado.title}" se ha agregado al carrito.</p>
               <div className="text-center">
-                <img 
-                  src={productoSeleccionado.image} 
+                <img
+                  src={productoSeleccionado.image}
                   alt={productoSeleccionado.title}
                   style={{ height: "100px", objectFit: "contain" }}
                 />
@@ -113,26 +120,26 @@ const Hombre = ({ productos, loading, agregarAlCarrito, favoritos, toggleFavorit
           )}
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleCloseModal}>
+          <Button variant="secondary" onClick={() => setShowModal(false)}>
             Seguir comprando
           </Button>
-          <Button variant="primary" onClick={handleVerCarrito}>
+          <Button variant="success" onClick={() => navigate("/carrito")}>
             Ver carrito
           </Button>
         </Modal.Footer>
       </Modal>
 
-      {/* Modal de aviso para iniciar sesión */}
-      <Modal show={showLoginPrompt} onHide={handleCloseLoginPrompt} centered>
+      {/* Modal login */}
+      <Modal show={showLoginPrompt} onHide={() => setShowLoginPrompt(false)} centered>
         <Modal.Header closeButton>
           <Modal.Title>Iniciar sesión</Modal.Title>
         </Modal.Header>
         <Modal.Body>Debes iniciar sesión para realizar esta acción.</Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleCloseLoginPrompt}>
+          <Button variant="secondary" onClick={() => setShowLoginPrompt(false)}>
             Cancelar
           </Button>
-          <Button variant="primary" onClick={() => navigate("/login")}>
+          <Button variant="success" onClick={() => navigate("/login")}>
             Iniciar sesión
           </Button>
         </Modal.Footer>

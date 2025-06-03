@@ -53,48 +53,48 @@ const Tecnologia = ({ productos, loading, agregarAlCarrito, favoritos, toggleFav
   }
 
   return (
-    <Container className="mt-4">
-      <h1>Tecnología</h1>
-      <Row>
-        {productosTecnologia.map((producto) => (
-          <Col key={producto.id} md={4} className="mb-4">
-            <Card className="h-100 position-relative">
-              <Card.Img
-                variant="top"
-                src={producto.image}
-                style={{ height: "200px", objectFit: "contain" }}
-              />
-              <div
-                style={{
-                  position: "absolute",
-                  top: 10,
-                  right: 10,
-                  color: "red",
-                  cursor: "pointer",
-                  fontSize: "1.5rem",
-                  backgroundColor: "white",
-                  borderRadius: "50%",
-                  padding: "5px"
-                }}
-                onClick={() => handleToggleFavorito(producto)}
-              >
-                {favoritos.find((p) => p.id === producto.id) ? <FaHeart /> : <FaRegHeart />}
-              </div>
-              <Card.Body className="d-flex flex-column">
-                <Card.Title style={{ fontSize: "16px" }}>{producto.title}</Card.Title>
-                <Card.Text>${producto.price}</Card.Text>
-                <Button
-                  variant="primary"
-                  className="mt-auto"
-                  onClick={() => handleAgregarAlCarrito(producto)}
-                >
-                  Agregar al carrito
-                </Button>
-              </Card.Body>
-            </Card>
-          </Col>
-        ))}
-      </Row>
+   <Container className="mt-4">
+  <h1 className="mb-4 fw-bold text-success">Tecnología</h1>
+  <Row>
+    {productosTecnologia.map((producto) => (
+      <Col key={producto.id} md={4} className="mb-4">
+        <Card className="h-100 shadow-sm position-relative">
+          <Card.Img
+            variant="top"
+            src={producto.image}
+            style={{ height: "250px", objectFit: "contain" }}
+          />
+          <div
+            style={{
+              position: "absolute",
+              top: 10,
+              right: 10,
+              fontSize: "1.5rem",
+              color: "red",
+              backgroundColor: "#fff",
+              borderRadius: "50%",
+              padding: "5px",
+              cursor: "pointer",
+            }}
+            onClick={() => handleToggleFavorito(producto)}
+          >
+            {favoritos.find((p) => p.id === producto.id) ? <FaHeart /> : <FaRegHeart />}
+          </div>
+          <Card.Body className="d-flex flex-column">
+            <Card.Title>{producto.title}</Card.Title>
+            <Card.Text className="text-primary fw-bold">${producto.price}</Card.Text>
+            <Button
+              variant="success"
+              className="mt-auto"
+              onClick={() => handleAgregarAlCarrito(producto)}
+            >
+              Agregar al carrito
+            </Button>
+          </Card.Body>
+        </Card>
+      </Col>
+    ))}
+  </Row>
 
       {/* Modal de confirmación */}
       <Modal show={showModal} onHide={handleCloseModal} centered>
@@ -119,7 +119,7 @@ const Tecnologia = ({ productos, loading, agregarAlCarrito, favoritos, toggleFav
           <Button variant="secondary" onClick={handleCloseModal}>
             Seguir comprando
           </Button>
-          <Button variant="primary" onClick={handleVerCarrito}>
+          <Button variant="success" onClick={handleVerCarrito}>
             Ver carrito
           </Button>
         </Modal.Footer>
@@ -135,7 +135,7 @@ const Tecnologia = ({ productos, loading, agregarAlCarrito, favoritos, toggleFav
           <Button variant="secondary" onClick={handleCloseLoginModal}>
             Cancelar
           </Button>
-          <Button variant="primary" onClick={handleGoToLogin}>
+          <Button variant="success" onClick={handleGoToLogin}>
             Iniciar sesión
           </Button>
         </Modal.Footer>
