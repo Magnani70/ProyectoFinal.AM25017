@@ -14,7 +14,7 @@ const Ofertas = ({ productos, agregarAlCarrito, favoritos, toggleFavorito, loadi
   const productosConDescuento = productos
     .filter((producto) => producto.price < 15) // lógica de oferta ficticia que me devuelve los productos menores a ese valor
     .map((producto) => {
-      const precioOriginal = producto.price * 1.25;
+      const precioOriginal = producto.price * 3.25;
       const porcentajeDescuento = Math.round(((precioOriginal - producto.price) / precioOriginal) * 100);
       return {
         ...producto,

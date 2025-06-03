@@ -1,13 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Container, Row, Col, Card, Button, Modal } from 'react-bootstrap';
 import { useAuth } from '../components/AuthContext';
 import { Link } from 'react-router-dom';
 
-const Favoritos = ({ favoritos, setFavoritos }) => {
+const Favoritos = ({ favoritos, setFavoritos, agregarAlCarrito }) => {
   const { user } = useAuth();
   const [showLoginModal, setShowLoginModal] = useState(!user);
   const [showEliminarModal, setShowEliminarModal] = useState(false);
   const [productoAEliminar, setProductoAEliminar] = useState(null);
+  const toastRef = useRef(null);
 
   useEffect(() => {
     if (!user) setShowLoginModal(true);
@@ -21,6 +22,21 @@ const Favoritos = ({ favoritos, setFavoritos }) => {
   const handleEliminar = () => {
     setFavoritos((prev) => prev.filter((p) => p.id !== productoAEliminar.id));
     setShowEliminarModal(false);
+  };
+
+  const calcularPrecioConDescuento = (producto) => {
+    if (producto.descuento && producto.descuento > 0) {
+      return (producto.price * (1 - producto.descuento / 100)).toFixed(2);
+    }
+    return producto.price.toFixed(2);
+  };
+
+  const handleAgregarAlCarritoClick = (producto) => {
+    agregarAlCarrito(producto);
+    if (toastRef.current) {
+      const toast = new window.bootstrap.Toast(toastRef.current);
+      toast.show();
+    }
   };
 
   if (!user) {
@@ -50,39 +66,65 @@ const Favoritos = ({ favoritos, setFavoritos }) => {
   }
 
   return (
-    <Container className="mt-4">
+    <Container className="mt-4 position-relative">
       <h1>Mis Favoritos</h1>
       {favoritos.length === 0 ? (
         <p>No hay productos en la lista de favoritos.</p>
       ) : (
         <Row>
-          {favoritos.map((producto) => (
-            <Col key={producto.id} md={4} className="mb-4">
-              <Card className="h-100 position-relative">
-                <Card.Img
-                  variant="top"
-                  src={producto.image}
-                  style={{ height: '200px', objectFit: 'contain' }}
-                />
-                <Button
-                  variant="danger"
-                  size="sm"
-                  onClick={() => handleMostrarModal(producto)}
-                  className="position-absolute top-0 end-0 m-2"
-                >
-                  ❌
-                </Button>
-                <Card.Body>
-                  <Card.Title>{producto.title}</Card.Title>
-                  <Card.Text>${producto.price}</Card.Text>
-                </Card.Body>
-              </Card>
-            </Col>
-          ))}
+          {favoritos.map((producto) => {
+            const tieneDescuento = producto.descuento && producto.descuento > 0;
+            const precioConDescuento = calcularPrecioConDescuento(producto);
+
+            return (
+              <Col key={producto.id} md={4} className="mb-4">
+                <Card className="h-100 shadow-sm position-relative">
+                  <div className="position-relative">
+                    <Card.Img
+                      variant="top"
+                      src={producto.image}
+                      style={{ height: '200px', objectFit: 'contain' }}
+                    />
+                    <Button
+                      variant="danger"
+                      size="sm"
+                      onClick={() => handleMostrarModal(producto)}
+                      className="position-absolute top-0 end-0 m-2"
+                    >
+                      ❌
+                    </Button>
+                    {tieneDescuento && (
+                      <div className="position-absolute top-0 start-0 m-2 px-2 py-1 bg-danger text-white rounded">
+                        {producto.descuento}% OFF
+                      </div>
+                    )}
+                  </div>
+                  <Card.Body className="d-flex flex-column">
+                    <Card.Title>{producto.title}</Card.Title>
+                    {tieneDescuento ? (
+                      <div>
+                        <div className="text-muted text-decoration-line-through">${producto.price.toFixed(2)}</div>
+                        <div className="text-danger fw-bold">${precioConDescuento}</div>
+                      </div>
+                    ) : (
+                      <div className="text-primary fw-bold">${producto.price.toFixed(2)}</div>
+                    )}
+                    <Button
+                      variant="success"
+                      className="mt-auto"
+                      onClick={() => handleAgregarAlCarritoClick(producto)}
+                    >
+                      Agregar al carrito
+                    </Button>
+                  </Card.Body>
+                </Card>
+              </Col>
+            );
+          })}
         </Row>
       )}
 
-      {/* Modal confirmación eliminar */}
+      {/* Modal eliminar favorito */}
       <Modal show={showEliminarModal} onHide={() => setShowEliminarModal(false)} centered>
         <Modal.Header closeButton>
           <Modal.Title>Eliminar favorito</Modal.Title>
@@ -93,8 +135,31 @@ const Favoritos = ({ favoritos, setFavoritos }) => {
           <Button variant="danger" onClick={handleEliminar}>Eliminar</Button>
         </Modal.Footer>
       </Modal>
+
+      {/* Toast */}
+      <div
+        className="toast-container position-fixed bottom-0 end-0 p-3"
+        style={{ zIndex: 9999 }}
+      >
+        <div
+          className="toast align-items-center text-white bg-success border-0"
+          role="alert"
+          ref={toastRef}
+        >
+          <div className="d-flex">
+            <div className="toast-body">Producto agregado al carrito 🎉</div>
+            <button
+              type="button"
+              className="btn-close btn-close-white me-2 m-auto"
+              data-bs-dismiss="toast"
+              aria-label="Close"
+            ></button>
+          </div>
+        </div>
+      </div>
     </Container>
   );
 };
 
 export default Favoritos;
+

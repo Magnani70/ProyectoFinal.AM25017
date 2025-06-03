@@ -38,7 +38,6 @@ function AppContent() {
       });
   }, []);
 
-   // Cargar favoritos al iniciar sesión
   useEffect(() => {
     if (user) {
       const favoritosGuardados = localStorage.getItem(`favoritos_${user.email}`);
@@ -52,14 +51,12 @@ function AppContent() {
     }
   }, [user]);
 
-  // Guardar favoritos al cambiar
   useEffect(() => {
     if (user) {
       localStorage.setItem(`favoritos_${user.email}`, JSON.stringify(favoritos));
     }
   }, [favoritos, user]);
 
-  // Cargar carrito al iniciar sesión
   useEffect(() => {
     if (user) {
       const carritoGuardado = localStorage.getItem(`carrito_${user.email}`);
@@ -73,7 +70,6 @@ function AppContent() {
     }
   }, [user]);
 
-  // Guardar carrito al cambiar
   useEffect(() => {
     if (user) {
       localStorage.setItem(`carrito_${user.email}`, JSON.stringify(carrito));
@@ -81,9 +77,19 @@ function AppContent() {
   }, [carrito, user]);
 
   const agregarAlCarrito = (producto) => {
-    if (!user) return;
-    setCarrito((prev) => [...prev, producto]);
-  };
+  if (!user) return;
+
+  setCarrito((prev) => {
+    const index = prev.findIndex((p) => p.id === producto.id);
+    if (index !== -1) {
+      const nuevoCarrito = [...prev];
+      nuevoCarrito[index].cantidad += 1;
+      return nuevoCarrito;
+    } else {
+      return [...prev, { ...producto, cantidad: 1 }];
+    }
+  });
+};
 
   const toggleFavorito = (producto) => {
     setFavoritos((prev) => {
@@ -97,19 +103,126 @@ function AppContent() {
       <NavBar carrito={carrito} />
       <Routes>
         <Route path="/login" element={<Login />} />
-        <Route path="/" element={<Home productos={productos} agregarAlCarrito={agregarAlCarrito} favoritos={favoritos} toggleFavorito={toggleFavorito} />} />
-        <Route path="/tecnologia" element={<Tecnologia productos={productos} loading={loading} agregarAlCarrito={agregarAlCarrito} favoritos={favoritos} toggleFavorito={toggleFavorito} />} />
+        <Route
+          path="/"
+          element={
+            <Home
+              productos={productos}
+              agregarAlCarrito={agregarAlCarrito}
+              favoritos={favoritos}
+              toggleFavorito={toggleFavorito}
+            />
+          }
+        />
+        <Route
+          path="/tecnologia"
+          element={
+            <Tecnologia
+              productos={productos}
+              loading={loading}
+              agregarAlCarrito={agregarAlCarrito}
+              favoritos={favoritos}
+              toggleFavorito={toggleFavorito}
+            />
+          }
+        />
         <Route path="/contact" element={<Contact />} />
-        <Route path="/novedades" element={<Novedades productos={productos} loading={loading} agregarAlCarrito={agregarAlCarrito} favoritos={favoritos} toggleFavorito={toggleFavorito} />} />
-        <Route path="/perfil" element={<PrivateRoute> <Perfil user={user} carrito={carrito} logout={logout} /> </PrivateRoute>} />
-        <Route path="/editar-perfil" element={ <PrivateRoute><EditarPerfil /></PrivateRoute>} />
-        <Route path="/hombre" element={<Hombre productos={productos} loading={loading} agregarAlCarrito={agregarAlCarrito} favoritos={favoritos} toggleFavorito={toggleFavorito} />} />
-        <Route path="/joyeria" element={<Joyeria productos={productos} loading={loading} agregarAlCarrito={agregarAlCarrito} favoritos={favoritos} toggleFavorito={toggleFavorito} />} />
-        <Route path="/mujer" element={<Mujer productos={productos} loading={loading} agregarAlCarrito={agregarAlCarrito} favoritos={favoritos} toggleFavorito={toggleFavorito} />} />
-        <Route path="/carrito" element={<Carrito carrito={carrito} agregarAlCarrito={agregarAlCarrito} setCarrito={setCarrito} />} />
-        <Route path="/favoritos" element={<PrivateRoute><Favoritos favoritos={favoritos} setFavoritos={setFavoritos} /></PrivateRoute>} />
-        <Route path="/ofertas" element={<Ofertas productos={productos} agregarAlCarrito={agregarAlCarrito} />}/></Routes><Footer /></>
-);
+        <Route
+          path="/novedades"
+          element={
+            <Novedades
+              productos={productos}
+              loading={loading}
+              agregarAlCarrito={agregarAlCarrito}
+              favoritos={favoritos}
+              toggleFavorito={toggleFavorito}
+            />
+          }
+        />
+        <Route
+          path="/perfil"
+          element={
+            <PrivateRoute>
+              <Perfil user={user} carrito={carrito} logout={logout} />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/editar-perfil"
+          element={
+            <PrivateRoute>
+              <EditarPerfil />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/hombre"
+          element={
+            <Hombre
+              productos={productos}
+              loading={loading}
+              agregarAlCarrito={agregarAlCarrito}
+              favoritos={favoritos}
+              toggleFavorito={toggleFavorito}
+            />
+          }
+        />
+        <Route
+          path="/joyeria"
+          element={
+            <Joyeria
+              productos={productos}
+              loading={loading}
+              agregarAlCarrito={agregarAlCarrito}
+              favoritos={favoritos}
+              toggleFavorito={toggleFavorito}
+            />
+          }
+        />
+        <Route
+          path="/mujer"
+          element={
+            <Mujer
+              productos={productos}
+              loading={loading}
+              agregarAlCarrito={agregarAlCarrito}
+              favoritos={favoritos}
+              toggleFavorito={toggleFavorito}
+            />
+          }
+        />
+        <Route
+          path="/carrito"
+          element={
+            <Carrito
+              carrito={carrito}
+              agregarAlCarrito={agregarAlCarrito}
+              setCarrito={setCarrito}
+            />
+          }
+        />
+        <Route
+          path="/favoritos"
+          element={
+            <PrivateRoute>
+              <Favoritos
+                favoritos={favoritos}
+                setFavoritos={setFavoritos}
+                agregarAlCarrito={agregarAlCarrito}
+              />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/ofertas"
+          element={
+            <Ofertas productos={productos} agregarAlCarrito={agregarAlCarrito} />
+          }
+        />
+      </Routes>
+      <Footer />
+    </>
+  );
 }
 
 function App() {
