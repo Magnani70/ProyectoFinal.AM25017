@@ -19,6 +19,8 @@ import {
   FaUser,
 } from "react-icons/fa";
 import { useAuth } from "../components/AuthContext";
+import ProductCardReusable from "../components/ProductCardReusable";
+
 
 const Home = ({
   productos,
@@ -223,12 +225,12 @@ const ProductGrid = ({
     <Row xs={1} sm={2} md={4} className="g-4">
       {productos.map((producto) => (
         <Col key={producto.id}>
-          <ProductCard
-            producto={producto}
-            handleAgregarAlCarrito={handleAgregarAlCarrito}
-            handleToggleFavorito={handleToggleFavorito}
-            favoritos={favoritos}
-          />
+        <ProductCardReusable
+  producto={producto}
+  handleAgregarAlCarrito={handleAgregarAlCarrito}
+  handleToggleFavorito={handleToggleFavorito}
+  favoritos={favoritos}
+/>
         </Col>
       ))}
     </Row>

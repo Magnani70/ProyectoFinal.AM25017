@@ -1,53 +1,41 @@
 import React from "react";
 import { useAuth } from "../components/AuthContext";
 import { Navigate } from "react-router-dom";
-import {
-  Container,
-  Row,
-  Col,
-  Card,
-  Button,
-  Alert,
-  Form,
-  ListGroup,
-  Image,
-} from "react-bootstrap";
+import { Container, Row, Col, Card, Button, Alert, Form, ListGroup, Image,} from "react-bootstrap";
 
 const Carrito = ({ carrito, setCarrito }) => {
   const { user } = useAuth();
   if (!user) return <Navigate to="/login" replace />;
 
-  const productosAgrupados = carrito.reduce((acc, producto) => {
-    const existente = acc.find((item) => item.id === producto.id);
-    if (existente) {
-      existente.cantidad += 1;
-    } else {
-      acc.push({ ...producto, cantidad: 1 });
-    }
-    return acc;
-  }, []);
+const productosAgrupados = carrito;
 
   const total = productosAgrupados.reduce(
     (sum, producto) => sum + producto.price * producto.cantidad,
     0
   );
 
-  const aumentarCantidad = (producto) => {
-    setCarrito((prev) => [...prev, producto]);
-  };
+ const aumentarCantidad = (producto) => {
+  setCarrito((prev) =>
+    prev.map((p) =>
+      p.id === producto.id
+        ? { ...p, cantidad: p.cantidad + 1 }
+        : p
+    )
+  );
+};
 
-  const disminuirCantidad = (producto) => {
-    setCarrito((prev) => {
-      let eliminado = false;
-      return prev.filter((p) => {
-        if (!eliminado && p.id === producto.id) {
-          eliminado = true;
-          return false;
-        }
-        return true;
-      });
-    });
-  };
+const disminuirCantidad = (producto) => {
+  setCarrito((prev) =>
+    prev
+      .map((p) =>
+        p.id === producto.id
+          ? { ...p, cantidad: p.cantidad - 1 }
+          : p
+      )
+      .filter((p) => p.cantidad > 0)
+  );
+};
+
 
   const eliminarProducto = (producto) => {
     setCarrito((prev) => prev.filter((p) => p.id !== producto.id));
@@ -109,7 +97,7 @@ const Carrito = ({ carrito, setCarrito }) => {
                         </Button>
                       </div>
                     </Col>
-                    <Col md={3} className="text-end">
+                    <Col md={12} className="text-end">
                       <Button
                         variant="outline-danger"
                         size="sm"

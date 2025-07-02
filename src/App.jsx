@@ -17,6 +17,7 @@ import PrivateRoute from './components/PrivateRoute';
 import Perfil from './pages/Perfil'; 
 import EditarPerfil from './pages/EditarPerfil';
 import Ofertas from "./pages/Ofertas";
+import MisProductos from './pages/MisProductos';
 
 function AppContent() {
   const [productos, setProductos] = useState([]);
@@ -76,17 +77,17 @@ function AppContent() {
     }
   }, [carrito, user]);
 
-  const agregarAlCarrito = (producto) => {
+const agregarAlCarrito = (producto) => {
   if (!user) return;
 
   setCarrito((prev) => {
     const index = prev.findIndex((p) => p.id === producto.id);
     if (index !== -1) {
       const nuevoCarrito = [...prev];
-      nuevoCarrito[index].cantidad += 1;
+      nuevoCarrito[index].cantidad += producto.cantidad;
       return nuevoCarrito;
     } else {
-      return [...prev, { ...producto, cantidad: 1 }];
+      return [...prev, producto];
     }
   });
 };
@@ -98,6 +99,8 @@ function AppContent() {
     });
   };
 
+
+  
   return (
     <>
       <NavBar carrito={carrito} />
@@ -106,9 +109,9 @@ function AppContent() {
         <Route
           path="/"
           element={
-            <Home
+           <Home
               productos={productos}
-              agregarAlCarrito={agregarAlCarrito}
+              agregarAlCarrito={agregarAlCarrito} 
               favoritos={favoritos}
               toggleFavorito={toggleFavorito}
             />
@@ -219,6 +222,14 @@ function AppContent() {
             <Ofertas productos={productos} agregarAlCarrito={agregarAlCarrito} />
           }
         />
+        <Route
+    path="/mis-productos"
+    element={
+      <PrivateRoute>
+        <MisProductos user={user} />
+      </PrivateRoute>
+    }
+  />
       </Routes>
       <Footer />
     </>
